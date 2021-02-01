@@ -40,6 +40,7 @@ import static org.mockito.Mockito.when;
  * @author Dave Syer
  * @author Michael Minella
  * @author Will Schipp
+ * @author Niels Ferguson
  * 
  */
 public class TransactionAwareBufferedWriterTests {
@@ -335,6 +336,27 @@ public class TransactionAwareBufferedWriterTests {
 		for(int i=0; i< limit; i++) {
 			assertEquals(String.valueOf(i), results[i]);
 		}				
+	}
+
+	//BATCH-3745
+	@Test
+	public void testWriteInTransactionWithOffset() throws IOException{
+		ArgumentCaptor<ByteBuffer> bb = ArgumentCaptor.forClass(ByteBuffer.class);
+		when(fileChannel.write(bb.capture())).thenReturn(1);
+
+		new TransactionTemplate(transactionManager).execute((TransactionCallback<Void>) status -> {
+
+			try {
+				writer.write("foo", 2, 1);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return null;
+		});
+
+		String s = getStringFromByteBuffer(bb.getValue());
+
+		assertEquals("o", s);
 	}
 
 	private String getStringFromByteBuffer(ByteBuffer bb) {
