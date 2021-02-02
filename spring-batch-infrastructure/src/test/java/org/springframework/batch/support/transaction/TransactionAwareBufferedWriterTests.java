@@ -342,12 +342,12 @@ public class TransactionAwareBufferedWriterTests {
 	@Test
 	public void testWriteInTransactionWithOffset() throws IOException{
 		ArgumentCaptor<ByteBuffer> bb = ArgumentCaptor.forClass(ByteBuffer.class);
-		when(fileChannel.write(bb.capture())).thenReturn(1);
+		when(fileChannel.write(bb.capture())).thenReturn(3);
 
 		new TransactionTemplate(transactionManager).execute((TransactionCallback<Void>) status -> {
 
 			try {
-				writer.write("foo", 2, 1);
+				writer.write("hamburger", 4, 3);
 			} catch (IOException e) {
 				throw new IllegalStateException("Unexpected IOException", e);
 			}
@@ -356,7 +356,7 @@ public class TransactionAwareBufferedWriterTests {
 
 		String s = getStringFromByteBuffer(bb.getValue());
 
-		assertEquals("o", s);
+		assertEquals("urg", s);
 	}
 
 	private String getStringFromByteBuffer(ByteBuffer bb) {
