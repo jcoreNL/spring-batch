@@ -349,7 +349,7 @@ public class TransactionAwareBufferedWriterTests {
 			try {
 				writer.write("foo", 2, 1);
 			} catch (IOException e) {
-				e.printStackTrace();
+				throw new IllegalStateException("Unexpected IOException", e);
 			}
 			return null;
 		});
